@@ -24,14 +24,14 @@ void set_pedido_fila(FilaPedidos *filaPedidos, void *pedido) {
   int i = filaPedidos->tamFila - 1;
   Pedido *pedidoFila = filaPedidos->pedidos[i];
 
-  while (i > 0 && comp_prioridade(pedido, pedidoFila)) {
+  while (i >= 0 && comp_prioridade(pedido, pedidoFila)) {
     filaPedidos->pedidos[i + 1] = pedidoFila;
 
     i--;
     pedidoFila = filaPedidos->pedidos[i];
   }
 
-  if (i == 0) filaPedidos->pedidos[i] = pedido; // Saiu pq a fila está vazia
+  if (!tem_elementos_fila(filaPedidos)) filaPedidos->pedidos[0] = pedido; // Saiu pq a fila está vazia
   else filaPedidos->pedidos[i + 1] = pedido; // Saiu pq encontrou pedido com prioridade igual
 
   filaPedidos->tamFila++;
@@ -51,4 +51,18 @@ void *pop_pedido_fila(FilaPedidos *filaPedidos) {
 
 int tem_elementos_fila(FilaPedidos *filaPedidos) {
   return filaPedidos->tamFila > 0;
+}
+
+void imprime_fila(FilaPedidos *filapedidos) {
+  printf("Tamanho: %d\n", filapedidos->tamFila);
+  printf("|| ");
+  if (tem_elementos_fila(filapedidos)) {
+
+    for (int i = 0; i < filapedidos->tamFila; i++) {
+      printf("%d - ", i);
+      printf("%s\t", get_tipo_pedido(filapedidos->pedidos[i]));
+    }
+  }
+  if( filapedidos->tamFila == 2) getchar();
+  printf("\n");
 }

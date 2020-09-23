@@ -116,6 +116,35 @@ Pedido* cria_pedido_cilindrico(void *fabrica) {
   return pedidoCilindrico;
 }
 
+Pedido* cria_pedido_conico(void *fabrica) {
+  // Alocação de espaço para o pedido
+  Pedido *pedidoConico = (Pedido *) malloc(sizeof(Pedido));
+  
+  // Valores default para um pedido do tipo conico
+  pedidoConico->prioridade = MEDIA;
+  pedidoConico->maquinaAtu = -1;
+  pedidoConico->estadiaTorno = 1.8;
+  pedidoConico->estadiaFresa = 0;
+  pedidoConico->estadiaMandril = 2.1;
+
+  // Inserindo máquinas na ordem em que elas serão utilizadas pelo pedido
+  pedidoConico->maquinas[0] = get_torno_fabrica((Fabrica *)fabrica);
+  pedidoConico->maquinas[1] = get_mandril_fabrica((Fabrica *)fabrica);
+  pedidoConico->maquinas[2] = get_torno_fabrica((Fabrica *)fabrica);
+  pedidoConico->maquinas[3] = NULL; // Valor NULL para indicar que o pedido saiu da fábrica
+
+  // Tempo do pedido = tempo da fábrica + um valor "aleatório"
+  pedidoConico->tempo = get_tempo_fabrica((Fabrica *)fabrica) + gera_tempo_pedido(19.1);
+  
+  // Ponteiros para funções necessários para um pedido conico
+  pedidoConico->tipoPedido = tipo_pedido_conico;
+  pedidoConico->atendePedido = atende_conico;
+  pedidoConico->setProxMaquina = set_prox_maquina_conico;
+  pedidoConico->finalizaPedido = finaliza_pedido_conico;
+
+  return pedidoConico;
+}
+
 void atende_pedido(Pedido *pedido, void *fabrica) {
   pedido->atendePedido(pedido, fabrica);
 }

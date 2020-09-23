@@ -38,6 +38,8 @@ void set_pedido_maquina(Maquina *maquina, void *pedido) {
 
     printf("\nPedido inserido na fila de espera da maquina\n");
   }
+  printf("Fila de espera ");
+  imprime_fila(maquina->filaPedidos);
 }
 
 float get_tempo_maquina(Maquina *maquina) {

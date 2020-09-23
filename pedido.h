@@ -3,6 +3,7 @@
 
 
 #include "cilindrico.h"
+#include "conico.h"
 
 
 typedef struct pedido Pedido;
@@ -28,6 +29,6 @@ void set_tempo_pedido(Pedido *pedido, float tempo);
 void atualiza_tempo_pedido(Pedido *pedido, float tempo);
 
 Pedido *cria_pedido_cilindrico(void *fabrica);
-
+Pedido *cria_pedido_conico(void *fabrica);
 
 #endif
