@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include "maquina.h"
 #include "pedido.h"
+#include "filapedidos.h"
 
 
 // Fábrica com os atributos e ponteiros pra pedidos e máquinas
@@ -18,15 +19,14 @@ typedef struct fabrica Fabrica;
 
 
 void set_tempo_fabrica(Fabrica *fabrica, float tempo);
-void set_prox_pedido_cilindrico(Fabrica *fabrica, Pedido *pedido);
-void set_prox_pedido_conico(Fabrica *fabrica, Pedido *pedido);
-
+void set_pedido_fila_fabrica(Fabrica *fabrica, Pedido *pedido);
 
 float get_tempo_fabrica(Fabrica *fabrica);
 
-Maquina *get_torno_fabrica(Fabrica *fabrica);
+Maquina *get_torno1_fabrica(Fabrica *fabrica);
 Maquina *get_fresa_fabrica(Fabrica *fabrica);
 Maquina *get_mandril_fabrica(Fabrica *fabrica);
+Maquina *get_torno2_fabrica(Fabrica *fabrica);
 
 void cria_fabrica(float tempo_fim);
 

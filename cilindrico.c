@@ -3,31 +3,42 @@
 #include "maquina.h"
 #include "pedido.h"
 
-char *tipo_pedido_cilindrico() {
-  return "Cilindrico";
+char *tipo_cilindrico() {
+  return "cilindrico";
 }
 
 void atende_cilindrico(void *pedido, void *fabrica) {
   // Ao atender um pedido cilindrico, outro pedido do mesmo tipo é criado
   // e adicionado na fábrica
-  set_prox_pedido_cilindrico(fabrica, cria_pedido_cilindrico(fabrica));
+  set_pedido_fila_fabrica(fabrica, cria_pedido_cilindrico(fabrica));
 
   // Setando a proxima máquina que o pedido irá
-  set_prox_maquina_cilindrico(pedido);
+  set_prox_maquina_cilindrico(pedido, fabrica);
+
+  set_atende_pedido(pedido, &set_prox_maquina_cilindrico);
 }
 
-void set_prox_maquina_cilindrico(void *pedido) {
-  // Passando o pedido para o proximo local
-  incrementa_maquina_pedido(pedido);
-
-  if (get_maquina_atual_pedido(pedido) != NULL) { // Pedido ainda dentro da fabrica
-    // Setando o pedido na maquina referente
-    set_pedido_maquina(get_maquina_atual_pedido(pedido), pedido);
-  }
-}
-
-void finaliza_pedido_cilindrico(void *fabrica) {
+void finaliza_pedido_cilindrico(void *pedido, void *fabrica) {
   // Quando o pedido é finalizado o contador é incrementado em 1
   inc_cont_cilindrico(fabrica);
   printf("Contador de pedidos cilindricos incrementado\n");
 }
+
+void set_prox_maquina_cilindrico(void *pedido, void *fabrica) {
+  if(!pedido_em_alguma_maquina(pedido)) { 
+    // Removendo pedido da maquina atual
+    transfere_fila_slot_maquina(get_maquina_atual_pedido(pedido), fabrica);
+  }
+
+  // Passando o pedido para o proximo local
+  incrementa_maquina_pedido(pedido);
+
+  Maquina *maquina = (Maquina *) get_maquina_atual_pedido(pedido);
+
+  if (maquina != NULL) { // Pedido ainda dentro da fabrica
+    get_func_pedido_maquina(fabrica, maquina, pedido);
+  } else {
+    finaliza_pedido_cilindrico(pedido, fabrica);
+  }
+}
+

@@ -3,9 +3,6 @@
 
 
 // includes necessários para o funcionamento das máquinas
-#include "torno.h"
-#include "fresa.h"
-#include "mandril.h"
 #include "filapedidos.h"
 
 // Tamanho máximo da fila de espera de uma máquina
@@ -16,16 +13,20 @@
 typedef struct maquina Maquina;
 
 
-void set_pedido_maquina(Maquina *maquina, void *pedido);
-void atende_maquina(Maquina *maquina, void *fabrica);
+int maquina_liberada(Maquina *maquina);
+
+void set_pedido_maquina(void *fabrica, Maquina *maquina, void *pedido);
+void set_pedido_slot_maquina(void *fabrica, Maquina *maquina, void *pedido);
+void finaliza_pedido_maquina(Maquina *maquina, void *pedido);
 void transfere_fila_slot_maquina(Maquina *maquina, void *fabrica);
+void get_func_pedido_maquina(void *fabrica, Maquina *maquina, void *pedido);
 
 void *get_pedido_maquina(Maquina *maquina);
+void *get_fila_pedidos_maquina(Maquina *maquina);
 
-float get_tempo_maquina(Maquina *maquina);
+Maquina *cria_torno(FilaPedidos *fila);
+Maquina *cria_fresa(FilaPedidos *fila);
+Maquina *cria_mandril(FilaPedidos *fila);
 
-Maquina *cria_torno();
-Maquina *cria_fresa();
-Maquina *cria_mandril();
 
 #endif

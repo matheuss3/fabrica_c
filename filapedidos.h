@@ -10,7 +10,8 @@
 
 typedef struct filapedidos FilaPedidos;
 
-FilaPedidos *cria_fila_pedidos();
+FilaPedidos *cria_fila_pedidos_fabrica();
+FilaPedidos *cria_fila_pedidos_maquina();
 
 void set_pedido_fila(FilaPedidos *filaPedidos, void *pedido);
 void imprime_fila(FilaPedidos *filapedidos);
