@@ -48,18 +48,18 @@ int tem_elementos_fila(FilaPedidos *filaPedidos) {
   return filaPedidos->tamFila > 0;
 }
 
-void imprime_fila(FilaPedidos *filapedidos) {
-  printf("Tamanho: %d\n", filapedidos->tamFila);
-  printf("|| ");
-  if (tem_elementos_fila(filapedidos)) {
+// void imprime_fila(FilaPedidos *filapedidos) {
+//   printf("Tamanho: %d\n", filapedidos->tamFila);
+//   printf("|| ");
+//   if (tem_elementos_fila(filapedidos)) {
 
-    for (int i = 0; i < filapedidos->tamFila; i++) {
-      printf("%d - ", i);
-      printf("%s;%.2f\t", get_tipo_pedido(filapedidos->pedidos[i]), get_tempo_pedido(filapedidos->pedidos[i]));
-    }
-  }
-  printf("\n");
-}
+//     for (int i = 0; i < filapedidos->tamFila; i++) {
+//       printf("%d - ", i);
+//       printf("%s;%.2f\t", get_tipo_pedido(filapedidos->pedidos[i]), get_tempo_pedido(filapedidos->pedidos[i]));
+//     }
+//   }
+//   printf("\n");
+// }
 
 FilaPedidos *cria_fila_pedidos_fabrica() {
   // Alocação de memória para a fila

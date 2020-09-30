@@ -2,7 +2,6 @@
 #define fabrica_h
 
 
-// includes necessários para o funcionamento da fábrica
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -30,8 +29,9 @@ Maquina *get_torno2_fabrica(Fabrica *fabrica);
 
 void cria_fabrica(float tempo_fim);
 
-void inc_cont_cilindrico(Fabrica *fabrica);
-void inc_cont_conico(Fabrica *fabrica);
-
+void inc_cont_cilindrico(float tempoProd, Fabrica *fabrica);
+void inc_cont_conico(float tempoProd, Fabrica *fabrica);
+void inc_cont_esferico_aco(float tempoProd, Fabrica *fabrica);
+void inc_cont_esferico_titanio(float tempoProd, Fabrica *fabrica);
 
 #endif

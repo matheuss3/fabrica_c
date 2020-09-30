@@ -4,14 +4,17 @@
 
 #include "cilindrico.h"
 #include "conico.h"
+#include "esfericoaco.h"
+#include "esfericotitanio.h"
 
 
 typedef struct pedido Pedido;
 
-char *get_tipo_pedido(Pedido *pedido);
+
 void *get_maquina_atual_pedido(Pedido *pedido);
 
 float get_tempo_pedido(Pedido *pedido);
+float get_tempo_chegada_pedido(Pedido *pedido);
 float get_tempo_estadia_torno_pedido(Pedido *pedido);
 float get_tempo_estadia_fresa_pedido(Pedido *pedido);
 float get_tempo_estadia_mandril_pedido(Pedido *pedido);
@@ -31,5 +34,6 @@ void set_maquina_atu_pedido(Pedido *pedido, void *maquina);
 
 Pedido *cria_pedido_cilindrico(void *fabrica);
 Pedido *cria_pedido_conico(void *fabrica);
+Pedido *cria_pedido_esferico(void *fabrica);
 
 #endif

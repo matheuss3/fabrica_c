@@ -3,10 +3,6 @@
 #include "maquina.h"
 #include "pedido.h"
 
-char *tipo_conico() {
-  return "conico";
-}
-
 void atende_conico(void *pedido, void *fabrica) {
   // Ao atender um pedido conico, outro pedido do mesmo tipo é criado
   // e adicionado na fábrica
@@ -19,10 +15,10 @@ void atende_conico(void *pedido, void *fabrica) {
 
 void finaliza_pedido_conico(void *pedido, void *fabrica) {
   // Quando o pedido é finalizado o contador é incrementado em 1
-  free(pedido);
+  float tempoProducao = get_tempo_pedido(pedido) - get_tempo_chegada_pedido(pedido);
+  inc_cont_conico(tempoProducao, fabrica);
 
-  inc_cont_conico(fabrica);
-  printf("Contador de pedidos conicos incrementado\n");
+  free(pedido);
 }
 
 void set_prox_maquina_conico(void *pedido, void *fabrica) {
@@ -38,8 +34,8 @@ void set_prox_maquina_conico(void *pedido, void *fabrica) {
 
   if (maquina != NULL) { // Pedido ainda dentro da fabrica
     // Setando o pedido na maquina referente
-    get_func_pedido_maquina(fabrica, maquina, pedido);
+    get_func_set_pedido_maquina(fabrica, maquina, pedido);
   } else {
-    finaliza_pedido_conico(pedido, fabrica) ;
+    finaliza_pedido_conico(pedido, fabrica);
   }
 }

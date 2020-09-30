@@ -2,7 +2,6 @@
 #define maquina_h
 
 
-// includes necessários para o funcionamento das máquinas
 #include "filapedidos.h"
 
 // Tamanho máximo da fila de espera de uma máquina
@@ -15,11 +14,11 @@ typedef struct maquina Maquina;
 
 int maquina_liberada(Maquina *maquina);
 
-void set_pedido_maquina(void *fabrica, Maquina *maquina, void *pedido);
+void set_pedido_maquina_padrao(void *fabrica, Maquina *maquina, void *pedido);
 void set_pedido_slot_maquina(void *fabrica, Maquina *maquina, void *pedido);
 void finaliza_pedido_maquina(Maquina *maquina, void *pedido);
 void transfere_fila_slot_maquina(Maquina *maquina, void *fabrica);
-void get_func_pedido_maquina(void *fabrica, Maquina *maquina, void *pedido);
+void get_func_set_pedido_maquina(void *fabrica, Maquina *maquina, void *pedido);
 
 void *get_pedido_maquina(Maquina *maquina);
 void *get_fila_pedidos_maquina(Maquina *maquina);
