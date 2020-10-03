@@ -114,3 +114,14 @@ Maquina *cria_mandril(FilaPedidos *fila) {
 
   return mandril;
 }
+
+void imprime_maquina(Maquina *maquina) {
+  Pedido *pedidoSlot = (Pedido *) get_pedido_maquina(maquina);
+  if (pedidoSlot != NULL) {
+    printf("Pedido no slot: %c;%.2f\n", get_id_pedido(pedidoSlot), get_tempo_pedido(pedidoSlot));
+  } else {
+    printf("Nenhum pedido no slot da maquina\n");
+  }
+
+  imprime_fila(maquina->filaPedidos);
+}

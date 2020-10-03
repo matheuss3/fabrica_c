@@ -27,25 +27,21 @@ void print_line(char *menssagem) {
 
 void inc_cont_cilindrico(float tempoProd, Fabrica *fabrica) {
   fabrica->somaTemposCilindrico += tempoProd;
-  // printf("cilin: %.2f;%.2f\n",tempoProd,fabrica->somaTemposCilindrico);
   fabrica->contCilindrico++;
 }
 
 void inc_cont_conico(float tempoProd, Fabrica *fabrica) {
   fabrica->somaTemposConicos += tempoProd;
-  // printf("con: %.2f;%.2f\n",tempoProd,fabrica->somaTemposConicos);
   fabrica->contConico++;
 }
 
 void inc_cont_esferico_aco(float tempoProd, Fabrica *fabrica) {
   fabrica->somaTemposEsfericosAco += tempoProd;
-  // printf("con: %.2f;%.2f\n",tempoProd,fabrica->somaTemposConicos);
   fabrica->contEsfericoAco++;
 }
 
 void inc_cont_esferico_titanio(float tempoProd, Fabrica *fabrica) {
   fabrica->somaTemposEsfericosTitanio += tempoProd;
-  // printf("con: %.2f;%.2f\n",tempoProd,fabrica->somaTemposConicos);
   fabrica->contEsfericoTitanio++;
 }
 
@@ -77,22 +73,36 @@ Maquina *get_mandril_fabrica(Fabrica *fabrica) {
   return fabrica->mandril;
 }
 
+void gera_estatisticas(Fabrica *fabrica) {
+  float a = fabrica->somaTemposCilindrico;
+  float b = fabrica->somaTemposConicos;
+  float c = fabrica->somaTemposEsfericosAco;
+  float d = fabrica->somaTemposEsfericosTitanio;
+  int e = fabrica->contCilindrico;
+  int f = fabrica->contConico;
+  int g = fabrica->contEsfericoAco;
+  int h = fabrica->contEsfericoTitanio;
+
+  printf("Resutado:\n");
+  printf("Cilindricos          :    %.2f  %d\n", (a / e), e);
+  printf("Conicos              :    %.2f  %d\n", (b / f), f);
+  printf("Esfericos De Aco     :    %.2f  %d\n", (c / g), g);
+  printf("Esfericos De Titanio :    %.2f  %d\n", (d / h), h);
+}
+
 void atende_menor_tempo(Fabrica *fabrica) {
-  while (fabrica->tempoAtu <= fabrica->tempoFim) { // Verificando se o tempo acabou
+  while (fabrica->tempoAtu < fabrica->tempoFim) { // Verificando se o tempo acabou
     // Primeiro pedido da fila de espera da fábrica é retirado da fila para ser atendido
     Pedido *pedido = (Pedido *) pop_pedido_fila(fabrica->pedidos);
-    // printf("%.2f\n", fabrica->tempoAtu);
-    // Atualizando o tempo da fabrica para o tempo em que o pedido foi atendido
+
+    // Atualizando o tempo da fabrica para o tempo em que o pedido foi retirado da fila
     set_tempo_fabrica(fabrica, get_tempo_pedido(pedido));
+
     // Atendendo o pedido retirado
     atende_pedido(pedido, fabrica);
   }
-  
-  printf("CILINDRICO:       %.2f \t %d\n", (fabrica->somaTemposCilindrico / fabrica->contCilindrico), fabrica->contCilindrico);
-  printf("CONICO:           %.2f \t %d\n", (fabrica->somaTemposConicos / fabrica->contConico), fabrica->contConico);
-  printf("ESFERICO ACO:     %.3f \t %d\n", (fabrica->somaTemposEsfericosAco / fabrica->contEsfericoAco), fabrica->contEsfericoAco);
-  printf("ESFERICO TITANIO: %.3f \t %d\n", (fabrica->somaTemposEsfericosTitanio / fabrica->contEsfericoTitanio), fabrica->contEsfericoTitanio);
 
+  gera_estatisticas(fabrica);
 }
 
 void cria_fabrica(float tempoFim) {

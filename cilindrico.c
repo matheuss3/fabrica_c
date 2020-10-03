@@ -16,7 +16,7 @@ void atende_cilindrico(void *pedido, void *fabrica) {
 
 void finaliza_pedido_cilindrico(void *pedido, void *fabrica) {
   // Quando o pedido é finalizado o contador é incrementado em 1
-  float tempoProducao = get_tempo_pedido(pedido) - get_tempo_chegada_pedido(pedido);
+  float tempoProducao = (get_tempo_fabrica(fabrica)) - (get_tempo_chegada_pedido(pedido));
   inc_cont_cilindrico(tempoProducao, fabrica);
 
   free(pedido);
@@ -31,9 +31,8 @@ void set_prox_maquina_cilindrico(void *pedido, void *fabrica) {
   // Passando o pedido para o proximo local
   incrementa_maquina_pedido(pedido);
 
-  Maquina *maquina = (Maquina *) get_maquina_atual_pedido(pedido);
-
-  if (maquina != NULL) { // Pedido ainda dentro da fabrica
+  if (!pedido_pronto(pedido)) { // Pedido ainda dentro da fabrica
+    Maquina *maquina = (Maquina *) get_maquina_atual_pedido(pedido);
     get_func_set_pedido_maquina(fabrica, maquina, pedido);
   } else {
     finaliza_pedido_cilindrico(pedido, fabrica);

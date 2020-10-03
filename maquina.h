@@ -19,6 +19,7 @@ void set_pedido_slot_maquina(void *fabrica, Maquina *maquina, void *pedido);
 void finaliza_pedido_maquina(Maquina *maquina, void *pedido);
 void transfere_fila_slot_maquina(Maquina *maquina, void *fabrica);
 void get_func_set_pedido_maquina(void *fabrica, Maquina *maquina, void *pedido);
+void imprime_maquina(Maquina *maquina);
 
 void *get_pedido_maquina(Maquina *maquina);
 void *get_fila_pedidos_maquina(Maquina *maquina);

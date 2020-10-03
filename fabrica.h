@@ -12,8 +12,6 @@
 #include "filapedidos.h"
 
 
-// Fábrica com os atributos e ponteiros pra pedidos e máquinas
-// que a fábrica necessita
 typedef struct fabrica Fabrica;
 
 

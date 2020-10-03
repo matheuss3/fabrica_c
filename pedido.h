@@ -13,6 +13,8 @@ typedef struct pedido Pedido;
 
 void *get_maquina_atual_pedido(Pedido *pedido);
 
+char get_id_pedido(Pedido *pedido);
+
 float get_tempo_pedido(Pedido *pedido);
 float get_tempo_chegada_pedido(Pedido *pedido);
 float get_tempo_estadia_torno_pedido(Pedido *pedido);
@@ -22,6 +24,7 @@ float get_tempo_estadia_mandril_pedido(Pedido *pedido);
 int get_local_pedido(Pedido *pedido);
 int get_prioridade_pedido(Pedido *pedido);
 int pedido_em_alguma_maquina(Pedido *pedido);
+int pedido_pronto(Pedido *pedido);
 
 void incrementa_maquina_pedido(Pedido *pedido);
 void atende_pedido(Pedido *pedido, void *fabrica);

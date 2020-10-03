@@ -8,6 +8,7 @@
 #define ALTA 3
 
 typedef struct pedido {
+  char id;
   int prioridade;
   
   float tempo;
@@ -22,6 +23,10 @@ typedef struct pedido {
 
   void (*atendePedido)(void *pedido, void *fabrica);
 } Pedido;
+
+char get_id_pedido(Pedido *pedido) {
+  return pedido->id;
+}
 
 void set_tempo_pedido(Pedido *pedido, float tempo) {
   pedido->tempo = tempo;
@@ -105,11 +110,16 @@ int pedido_em_alguma_maquina(Pedido *pedido) {
   return pedido->itMaquinaAtu == -1;
 }
 
+int pedido_pronto(Pedido *pedido) {
+  return get_maquina_atual_pedido(pedido) == NULL;
+}
+
 Pedido* cria_pedido_cilindrico(void *fabrica) {
   // Alocação de espaço para o pedido
   Pedido *pedidoCilindrico = (Pedido *) malloc(sizeof(Pedido));
   
   // Valores default para um pedido do tipo cilindrico
+  pedidoCilindrico->id = 'C';
   pedidoCilindrico->prioridade = BAIXA;
   pedidoCilindrico->itMaquinaAtu = -1;
   pedidoCilindrico->estadiaTorno = 0.8;
@@ -124,7 +134,7 @@ Pedido* cria_pedido_cilindrico(void *fabrica) {
   pedidoCilindrico->maquinas[4] = NULL; // Valor NULL para indicar que o pedido saiu da fábrica
 
   // Tempo do pedido = tempo da fábrica + um valor "aleatório"
-  pedidoCilindrico->tempo = get_tempo_fabrica((Fabrica *)fabrica) + gera_tempo_pedido(21.5);
+  pedidoCilindrico->tempo = (get_tempo_fabrica((Fabrica *) fabrica)) + gera_tempo_pedido(21.5);
   pedidoCilindrico->tempoChegada = pedidoCilindrico->tempo;
   
   // Ponteiro para funções necessários para um pedido cilindrico
@@ -138,6 +148,7 @@ Pedido* cria_pedido_conico(void *fabrica) {
   Pedido *pedidoConico = (Pedido *) malloc(sizeof(Pedido));
   
   // Valores default para um pedido do tipo conico
+  pedidoConico->id = 'N';
   pedidoConico->prioridade = MEDIA;
   pedidoConico->itMaquinaAtu = -1;
   pedidoConico->estadiaTorno = 1.8;
@@ -151,7 +162,7 @@ Pedido* cria_pedido_conico(void *fabrica) {
   pedidoConico->maquinas[3] = NULL; // Valor NULL para indicar que o pedido saiu da fábrica
 
   // Tempo do pedido = tempo da fábrica + um valor "aleatório"
-  pedidoConico->tempo = get_tempo_fabrica((Fabrica *)fabrica) + gera_tempo_pedido(19.1);
+  pedidoConico->tempo = (get_tempo_fabrica((Fabrica *) fabrica)) + gera_tempo_pedido(19.1);
   pedidoConico->tempoChegada = pedidoConico->tempo;
 
   // Ponteiros para funções necessários para um pedido conico
@@ -165,6 +176,7 @@ Pedido *cria_pedido_esferico_aco(void *fabrica) {
   Pedido *pedidoEsfericoAco = (Pedido *) malloc(sizeof(Pedido));
   
   // Valores default para um pedido do tipo conico
+  pedidoEsfericoAco->id = 'A';
   pedidoEsfericoAco->prioridade = ALTA;
   pedidoEsfericoAco->itMaquinaAtu = -1;
   pedidoEsfericoAco->estadiaTorno = 1.0;
@@ -178,7 +190,7 @@ Pedido *cria_pedido_esferico_aco(void *fabrica) {
   pedidoEsfericoAco->maquinas[3] = NULL; // Valor NULL para indicar que o pedido saiu da fábrica
 
   // Tempo do pedido = tempo da fábrica + um valor "aleatório"
-  pedidoEsfericoAco->tempo = get_tempo_fabrica((Fabrica *)fabrica) + gera_tempo_pedido(8.0);
+  pedidoEsfericoAco->tempo = (get_tempo_fabrica((Fabrica *) fabrica)) + gera_tempo_pedido(8.0);
   pedidoEsfericoAco->tempoChegada = pedidoEsfericoAco->tempo;
 
   // Ponteiros para funções necessários para um pedido conico
@@ -192,6 +204,7 @@ Pedido *cria_pedido_esferico_titanio(void *fabrica) {
   Pedido *pedidoEsfericoTitanio = (Pedido *) malloc(sizeof(Pedido));
   
   // Valores default para um pedido do tipo conico
+  pedidoEsfericoTitanio->id = 'T';
   pedidoEsfericoTitanio->prioridade = ALTA;
   pedidoEsfericoTitanio->itMaquinaAtu = -1;
   pedidoEsfericoTitanio->estadiaTorno = 1.6;
@@ -207,7 +220,7 @@ Pedido *cria_pedido_esferico_titanio(void *fabrica) {
   pedidoEsfericoTitanio->maquinas[5] = NULL; // Valor NULL para indicar que o pedido saiu da fábrica
 
   // Tempo do pedido = tempo da fábrica + um valor "aleatório"
-  pedidoEsfericoTitanio->tempo = get_tempo_fabrica((Fabrica *)fabrica) + gera_tempo_pedido(8.0);
+  pedidoEsfericoTitanio->tempo = (get_tempo_fabrica((Fabrica *) fabrica)) + gera_tempo_pedido(8.0);
   pedidoEsfericoTitanio->tempoChegada = pedidoEsfericoTitanio->tempo;
 
   // Ponteiros para funções necessários para um pedido conico
@@ -219,8 +232,8 @@ Pedido *cria_pedido_esferico_titanio(void *fabrica) {
 Pedido *cria_pedido_esferico(void *fabrica) {
   // Decidindo se será de aco ou titanio
   if (rand() % 100 < 10) {
-    return cria_pedido_esferico_aco(fabrica);
+    return cria_pedido_esferico_titanio(fabrica);
   }
-
-  return cria_pedido_esferico_titanio(fabrica);
+  
+  return cria_pedido_esferico_aco(fabrica);
 }
