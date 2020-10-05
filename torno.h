@@ -2,9 +2,12 @@
 #define torno_h
 
 
+#include "maquina.h"
+
+
 float tempo_estadia_torno(void *pedido);
 
-void *atende_torno(void *torno, void *fabrica);
+void set_pedido_maquina_torno(void *fabrica, Maquina *t1, void *pedido);
 
 
 #endif

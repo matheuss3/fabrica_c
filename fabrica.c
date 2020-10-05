@@ -1,128 +1,68 @@
 #include "fabrica.h"
 
 typedef struct fabrica {
-  Pedido *pedidoCilindrico;
-  int contCilindrico;
-  Pedido *pedidoConico;
-  int contConico;
-  // Pedido *pedidoEsfericoAco;
-  // int contEsfericoAco;
+  FilaPedidos *pedidos;
 
-  Maquina *torno;
-  // Maquina *torno2;
+  float somaTemposCilindrico;
+  int contCilindrico;
+  float somaTemposConicos;
+  int contConico;
+  float somaTemposEsfericosAco;
+  int contEsfericoAco;
+  float somaTemposEsfericosTitanio;
+  int contEsfericoTitanio;
+
+  Maquina *torno1;
+  Maquina *torno2;
   Maquina *fresa;
   Maquina *mandril;
 
   float tempoAtu;
   float tempoFim;
-  float tempos[5];
 } Fabrica;
 
 void print_line(char *menssagem) {
   printf("%s\n", menssagem);
 }
 
-void print_infos_fabrica(Fabrica *fabrica) {
-  printf(
-    "\nFABRICA\n\
-    Tempo: %.2f \t Tempo Fim: %.2f\n\
-    Tempo torno: %.2f \t Tempo fresa: %.2f \t Tempo mandril: %.2f \t\n\
-    Tempo pedido cilindrico: %.2f \t Tempo pedido conico: %.2f\n\
-    Quantidade de cilindricos finalizados: %d \t Quantidade de pedidos conicos finalizados: %d\n", 
-    fabrica->tempoAtu,
-    fabrica->tempoFim,
-    fabrica->tempos[2],
-    fabrica->tempos[3],
-    fabrica->tempos[4],
-    fabrica->tempos[0],
-    fabrica->tempos[1],
-    fabrica->contCilindrico,
-    fabrica->contConico
-  );
-}
-
-int pos_menor_tempo(float *tempos, int qtdTempos) {
-  int menor = 0;
-
-  for (int i = 1; i < qtdTempos; i++) {
-    if (tempos[i] < tempos[menor] && tempos[i] != 0) {
-      menor = i;
-    }
-  }
-
-  return menor;
-}
-
-void atualiza_tempos_fabrica(Fabrica *fabrica) {
-  fabrica->tempos[0] = get_tempo_pedido(fabrica->pedidoCilindrico);
-  fabrica->tempos[1] = get_tempo_pedido(fabrica->pedidoConico);
-  fabrica->tempos[2] = get_tempo_maquina(fabrica->torno);
-  fabrica->tempos[3] = get_tempo_maquina(fabrica->fresa);
-  fabrica->tempos[4] = get_tempo_maquina(fabrica->mandril);
-}
-
-void inc_cont_cilindrico(Fabrica *fabrica) {
+void inc_cont_cilindrico(float tempoProd, Fabrica *fabrica) {
+  fabrica->somaTemposCilindrico += tempoProd;
   fabrica->contCilindrico++;
 }
 
-void inc_cont_conico(Fabrica *fabrica) {
+void inc_cont_conico(float tempoProd, Fabrica *fabrica) {
+  fabrica->somaTemposConicos += tempoProd;
   fabrica->contConico++;
 }
 
-void atende_menor_tempo(Fabrica *fabrica) {
-  if (fabrica->tempoAtu <= fabrica->tempoFim) { // Verificando se o tempo acabou
-    // Posição do menor tempo da fila de tempos
-    int posMenor = pos_menor_tempo(fabrica->tempos, 5);
-    printf("\nMenor tempo: %.2f\n", fabrica->tempos[posMenor]);
-    
-    // Setando tempo da fábrica para próximo menor tempo
-    fabrica->tempoAtu = fabrica->tempos[posMenor];
-
-    if (posMenor == 0) { // Menor tempo para atender o pedido cilindrico
-      atende_pedido(fabrica->pedidoCilindrico, fabrica);
-    } else if (posMenor == 1) { // Atender conico
-      atende_pedido(fabrica->pedidoConico, fabrica);
-    } else if (posMenor == 2) { // Menor tempo para atender torno
-      atende_maquina(fabrica->torno, fabrica); 
-    } else if (posMenor == 3) { // Atender fresa
-      atende_maquina(fabrica->fresa, fabrica);
-    } else if (posMenor == 4) { // Mandril
-      atende_maquina(fabrica->mandril, fabrica);
-    }
-
-    // Atualizando o tempo da fábrica após os processos realizados
-    atualiza_tempos_fabrica(fabrica);
-
-    // Imprimindo as novas informações da fábrica
-    print_infos_fabrica(fabrica);
-    print_line("############################################################################################");
-    
-    // Tempo de espera para verificar o próximo atendimento da fábrica
-    // sleep(5);
-    atende_menor_tempo(fabrica);
-  } else {
-    print_line("Horario comercial finalizado");
-  }
+void inc_cont_esferico_aco(float tempoProd, Fabrica *fabrica) {
+  fabrica->somaTemposEsfericosAco += tempoProd;
+  fabrica->contEsfericoAco++;
 }
 
-void set_prox_pedido_cilindrico(Fabrica *fabrica, Pedido *pedido) {
-  fabrica->pedidoCilindrico = pedido;
-
-  fabrica->tempos[0] = get_tempo_pedido(fabrica->pedidoCilindrico);
+void inc_cont_esferico_titanio(float tempoProd, Fabrica *fabrica) {
+  fabrica->somaTemposEsfericosTitanio += tempoProd;
+  fabrica->contEsfericoTitanio++;
 }
 
-void set_prox_pedido_conico(Fabrica *fabrica, Pedido *pedido) {
-  fabrica->pedidoConico = pedido;
-
-  fabrica->tempos[1] = get_tempo_pedido(fabrica->pedidoConico);
+void set_pedido_fila_fabrica(Fabrica *fabrica, Pedido *pedido) {
+  set_pedido_fila(fabrica->pedidos, pedido);
 }
 
 void set_tempo_fabrica(Fabrica *fabrica, float tempo) {
   fabrica->tempoAtu = tempo;
 }
 
-Maquina *get_torno_fabrica(Fabrica *fabrica) {
-  return fabrica->torno;
+float get_tempo_fabrica(Fabrica *fabrica) {
+  return fabrica->tempoAtu;
+}
+
+Maquina *get_torno1_fabrica(Fabrica *fabrica) {
+  return fabrica->torno1;
+}
+
+Maquina *get_torno2_fabrica(Fabrica *fabrica) {
+  return fabrica->torno2;
 }
 
 Maquina *get_fresa_fabrica(Fabrica *fabrica) {
@@ -133,47 +73,71 @@ Maquina *get_mandril_fabrica(Fabrica *fabrica) {
   return fabrica->mandril;
 }
 
-float get_tempo_fabrica(Fabrica *fabrica) {
-  return fabrica->tempoAtu;
+void gera_estatisticas(Fabrica *fabrica) {
+  float a = fabrica->somaTemposCilindrico;
+  float b = fabrica->somaTemposConicos;
+  float c = fabrica->somaTemposEsfericosAco;
+  float d = fabrica->somaTemposEsfericosTitanio;
+  int e = fabrica->contCilindrico;
+  int f = fabrica->contConico;
+  int g = fabrica->contEsfericoAco;
+  int h = fabrica->contEsfericoTitanio;
+
+  printf("Resutado:\n");
+  printf("Cilindricos          :    %.2f  %d\n", (a / e), e);
+  printf("Conicos              :    %.2f  %d\n", (b / f), f);
+  printf("Esfericos De Aco     :    %.2f  %d\n", (c / g), g);
+  printf("Esfericos De Titanio :    %.2f  %d\n", (d / h), h);
+}
+
+void atende_menor_tempo(Fabrica *fabrica) {
+  while (fabrica->tempoAtu < fabrica->tempoFim) { // Verificando se o tempo acabou
+    // Primeiro pedido da fila de espera da fábrica é retirado da fila para ser atendido
+    Pedido *pedido = (Pedido *) pop_pedido_fila(fabrica->pedidos);
+
+    // Atualizando o tempo da fabrica para o tempo em que o pedido foi retirado da fila
+    set_tempo_fabrica(fabrica, get_tempo_pedido(pedido));
+
+    // Atendendo o pedido retirado
+    atende_pedido(pedido, fabrica);
+  }
+
+  gera_estatisticas(fabrica);
 }
 
 void cria_fabrica(float tempoFim) {
   // Alocação de memória para a fábrica
   Fabrica *fabrica = (Fabrica *) malloc(sizeof(Fabrica));
-  print_line("Fabrica alocada");
 
   // Atributos default da fábrica
+  fabrica->somaTemposCilindrico = 0.0;
   fabrica->contCilindrico = 0;
+  fabrica->somaTemposConicos = 0.0;
   fabrica->contConico = 0;
+  fabrica->somaTemposEsfericosAco = 0.0;
+  fabrica->contEsfericoAco = 0;
+  fabrica->somaTemposEsfericosTitanio = 0.0;
+  fabrica->contEsfericoTitanio = 0;
   fabrica->tempoAtu = 0;
   fabrica->tempoFim = tempoFim;
 
   // Máquinas da fábrica
-  fabrica->torno = cria_torno();
-  print_line("Torno criado");
-  fabrica->fresa = cria_fresa();
-  print_line("Fresa criada");
-  fabrica->mandril = cria_mandril();
-  print_line("Mandril criada");
-  // Tempo do torno adicionado em seu lugar na fila de tempos
-  // da fábrica
-  fabrica->tempos[2] = get_tempo_maquina(fabrica->torno);
-  fabrica->tempos[3] = get_tempo_maquina(fabrica->fresa);
-  fabrica->tempos[4] = get_tempo_maquina(fabrica->mandril);
+  // Os tornos compartilham a mesma fila de pedidos
+  FilaPedidos *filatorno = cria_fila_pedidos_maquina();
+  fabrica->torno1 = cria_torno(filatorno);
+  fabrica->torno2 = cria_torno(filatorno);
 
-  // Pedidos iniciais
-  fabrica->pedidoCilindrico = cria_pedido_cilindrico(fabrica);
-  print_line("Pedido cilindrico criado");
-  fabrica->pedidoConico = cria_pedido_conico(fabrica);
-  print_line("Pedido conico criado");
-  // Tempo dos pedidos adicionado em seu lugar na fila de tempos
-  // da fábrica
-  fabrica->tempos[0] = get_tempo_pedido(fabrica->pedidoCilindrico);
-  fabrica->tempos[1] = get_tempo_pedido(fabrica->pedidoConico);
+  fabrica->fresa = cria_fresa(cria_fila_pedidos_maquina());
+
+  fabrica->mandril = cria_mandril(cria_fila_pedidos_maquina());
+
+  fabrica->pedidos = cria_fila_pedidos_fabrica();
   
-  // Exibição das informações iniciais da fábrica
-  print_infos_fabrica(fabrica);
-  
-  // Funão para atender o menor tempo da fila
+  // Os primeiros pedidos da fábrica
+  set_pedido_fila(fabrica->pedidos, cria_pedido_cilindrico(fabrica));
+  set_pedido_fila(fabrica->pedidos, cria_pedido_conico(fabrica));
+  set_pedido_fila(fabrica->pedidos, cria_pedido_esferico(fabrica));
+
+  // Inicio dos atendimentos
   atende_menor_tempo(fabrica);
 }

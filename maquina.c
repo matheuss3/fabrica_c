@@ -1,122 +1,62 @@
 #include "maquina.h"
 #include "fabrica.h"
 #include "pedido.h"
+#include "torno.h"
+#include "fresa.h"
+#include "mandril.h"
 
 typedef struct maquina {
-  float tempo;
-  
   Pedido *slotPedido;
 
   FilaPedidos *filaPedidos;
 
-  void *(*atendeMaquina)(void *maquina, void *fabrica);
+  void (*setPedidoMaquina)(void *fabrica, struct maquina *maquina, void *pedido);
   float (*tempoEstadiaPedido)(void *pedido);
 } Maquina;
-
-void set_pedido_maquina(Maquina *maquina, void *pedido) {
-  // Pedido posicionado no slod de produção
-  Pedido *pedidoSlot = get_pedido_maquina(maquina);
-  
-  if (pedidoSlot == NULL) { // Não existe pedido no slot
-    maquina->slotPedido = (Pedido *) pedido;
-    
-    // Tempo em que o pedido foi para o slot da máquina para
-    // ser produzido
-    float tempoPedido = get_tempo_pedido(pedido);
-    // Tempo de produção do pedido
-    float tempoEstadia = maquina->tempoEstadiaPedido(pedido);
-    // Tempo em que o pedido foi para o slot + tempo de produção
-    maquina->tempo = tempoPedido + tempoEstadia;
-
-    printf("\nPedido setado no slot da maquina\n");
-    printf("Tempo de chegada: %.2f\n", tempoPedido);
-    printf("Tempo de estadia: %.2f\n", tempoEstadia);
-    printf("Tempo de saida: %.2f\n", maquina->tempo);
-  } else {
-    // Inserindo pedido na fila de espera
-    set_pedido_fila(maquina->filaPedidos, pedido);
-
-    printf("\nPedido inserido na fila de espera da maquina\n");
-  }
-  printf("Fila de espera ");
-  imprime_fila(maquina->filaPedidos);
-}
-
-float get_tempo_maquina(Maquina *maquina) {
-  return maquina->tempo;
-}
 
 void *get_pedido_maquina(Maquina *maquina) {
   return maquina->slotPedido;
 }
 
-Maquina *cria_torno() {
-  // Alocação de memória para a máquina
-  Maquina *torno = (Maquina *) malloc(sizeof(Maquina));
-
-  // Valores default para os atributos da máquina
-  torno->tempo = 0;
-  torno->slotPedido = NULL;
-  torno->filaPedidos = cria_fila_pedidos();
-
-  // Ponteiros específicos para funções de um torno
-  torno->tempoEstadiaPedido = tempo_estadia_torno;
-  torno->atendeMaquina = atende_torno;
-
-  return torno;
+void *get_fila_pedidos_maquina(Maquina *maquina) {
+  return maquina->filaPedidos;
 }
 
-Maquina *cria_fresa() {
-  // Alocação de memória para a máquina
-  Maquina *fresa = (Maquina *) malloc(sizeof(Maquina));
-
-  // Valores default para os atributos da máquina
-  fresa->tempo = 0;
-  fresa->slotPedido = NULL;
-  fresa->filaPedidos = cria_fila_pedidos();
-
-  // Ponteiros específicos para funções de um fresa
-  fresa->tempoEstadiaPedido = tempo_estadia_fresa;
-  fresa->atendeMaquina = atende_fresa;
-
-  return fresa;
+void get_func_set_pedido_maquina(void *fabrica, Maquina *maquina, void *pedido) {
+  maquina->setPedidoMaquina(fabrica, maquina, pedido);
 }
 
-Maquina *cria_mandril() {
-  // Alocação de memória para a máquina
-  Maquina *fresa = (Maquina *) malloc(sizeof(Maquina));
-
-  // Valores default para os atributos da máquina
-  fresa->tempo = 0;
-  fresa->slotPedido = NULL;
-  fresa->filaPedidos = cria_fila_pedidos();
-
-  // Ponteiros específicos para funções de um fresa
-  fresa->tempoEstadiaPedido = tempo_estadia_mandril;
-  fresa->atendeMaquina = atende_mandril;
-
-  return fresa;
-}
-
-void atende_maquina(Maquina *maquina, void *fabrica) {
-  // Ao atender uma máquina quer dizer que, o pedido que está
-  // no slot da máquina terminou de ser produzido.
-  // A função de atendimento de uma máquina retorna o pedido que
-  // estava no slot
-  Pedido *pedidoSlot = maquina->atendeMaquina(maquina, fabrica);
-
-  // Mandando o pedido para sua proxima máquina
-  set_prox_maquina_pedido(pedidoSlot);
+void set_pedido_slot_maquina(void *fabrica, Maquina *maquina, void *pedido) {
+  maquina->slotPedido = (Pedido *) pedido;
   
-  // Verificando se o pedido foi finalizado totalmente
-  finaliza_etapa_ped(pedidoSlot, fabrica);
+  // Tempo em que o pedido foi para o slot da máquina para
+  // ser produzido
+  float tempoPedido = get_tempo_pedido(pedido);
+  // Tempo de produção do pedido
+  float tempoEstadia = maquina->tempoEstadiaPedido(pedido);
+  // Tempo em que o pedido foi para o slot + tempo de produção
+  set_tempo_pedido(pedido, tempoPedido + tempoEstadia);
+
+  set_pedido_fila_fabrica(fabrica, pedido);
+}
+
+int maquina_liberada(Maquina *maquina) {
+  return maquina->slotPedido == NULL;
+}
+
+void set_pedido_maquina_padrao(void *fabrica, Maquina *maquina, void *pedido) {
+  if (maquina_liberada(maquina)) { // Não existe pedido no slot
+    set_pedido_slot_maquina(fabrica, maquina, pedido);
+  } else {
+    // Inserindo pedido na fila de espera
+    set_pedido_fila(get_fila_pedidos_maquina(maquina), pedido);
+  }
 }
 
 void transfere_fila_slot_maquina(Maquina *maquina, void *fabrica) {
   // Setando null no slot para indicar que o slot está vazio
+  // Removendo o pedido
   maquina->slotPedido = NULL;
-
-  printf("Pedido do slot removido.\n");
 
   if (tem_elementos_fila(maquina->filaPedidos)) { // Se existe alguem na fila
     // Pedido na primeira posição da fila será atendido
@@ -126,13 +66,62 @@ void transfere_fila_slot_maquina(Maquina *maquina, void *fabrica) {
     set_tempo_pedido(proxPedido, get_tempo_fabrica(fabrica));
 
     // Inserindo pedido no slot da máquina
-    printf("Setando proximo pedido da fila no slot de produção");
-    set_pedido_maquina(maquina, proxPedido);
-
-    printf("Pedido transferido da fila para producao.\n");
-  } else { // Não existem pedidos na fila
-    maquina->tempo = 0.0;
-
-    printf("Nenhum pedido na fila de espera\n");
+    get_func_set_pedido_maquina(fabrica, maquina, proxPedido);
   }
+}
+
+Maquina *cria_torno(FilaPedidos *fila) {
+  // Alocação de memória para a máquina
+  Maquina *torno = (Maquina *) malloc(sizeof(Maquina));
+
+  // Valores default para os atributos da máquina
+  torno->slotPedido = NULL;
+  torno->filaPedidos = fila;
+  
+  // Ponteiros específicos para funções de um torno
+  torno->tempoEstadiaPedido = tempo_estadia_torno;
+  torno->setPedidoMaquina = set_pedido_maquina_torno;
+
+  return torno;
+}
+
+Maquina *cria_fresa(FilaPedidos *fila) {
+  // Alocação de memória para a máquina
+  Maquina *fresa = (Maquina *) malloc(sizeof(Maquina));
+
+  // Valores default para os atributos da máquina
+  fresa->slotPedido = NULL;
+  fresa->filaPedidos = fila;
+
+  // Ponteiros específicos para funções de um fresa
+  fresa->tempoEstadiaPedido = tempo_estadia_fresa;
+  fresa->setPedidoMaquina = set_pedido_maquina_padrao;
+
+  return fresa;
+}
+
+Maquina *cria_mandril(FilaPedidos *fila) {
+  // Alocação de memória para a máquina
+  Maquina *mandril = (Maquina *) malloc(sizeof(Maquina));
+
+  // Valores default para os atributos da máquina
+  mandril->slotPedido = NULL;
+  mandril->filaPedidos = fila;
+
+  // Ponteiros específicos para funções de um mandril
+  mandril->tempoEstadiaPedido = tempo_estadia_mandril;
+  mandril->setPedidoMaquina = set_pedido_maquina_padrao;
+
+  return mandril;
+}
+
+void imprime_maquina(Maquina *maquina) {
+  Pedido *pedidoSlot = (Pedido *) get_pedido_maquina(maquina);
+  if (pedidoSlot != NULL) {
+    printf("Pedido no slot: %c;%.2f\n", get_id_pedido(pedidoSlot), get_tempo_pedido(pedidoSlot));
+  } else {
+    printf("Nenhum pedido no slot da maquina\n");
+  }
+
+  imprime_fila(maquina->filaPedidos);
 }

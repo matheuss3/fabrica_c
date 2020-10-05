@@ -4,7 +4,5 @@
 
 float tempo_estadia_mandril(void *pedido);
 
-void *atende_mandril(void *torno, void *fabrica);
-
 
 #endif
